@@ -39,7 +39,17 @@ var UIController = (function(){
 // * Global App Controller
 var controller = (function (budgetCtrl, UICtrl) {
 
-    var DOM = UICtrl.getDOMput();
+    var setupEventListeners = function () {
+        var DOM = UICtrl.getDOMput();
+        document.querySelector(DOM.inputButton).addEventListener('click', ctrlAddItem);
+
+        document.addEventListener('keypress', function (event) {
+            if(event.key === 'Enter')
+                ctrlAddItem();
+
+        });
+
+    };
     var ctrlAddItem = function(){
         // * 1) Get the field input data
 
@@ -50,14 +60,16 @@ var controller = (function (budgetCtrl, UICtrl) {
         // * 4) Calculate the budget
         // * 5) Display the budget on the UI
     };
-
-    document.querySelector(DOM.inputButton).addEventListener('click', ctrlAddItem);
-
-    document.addEventListener('keypress', function (event) {
-        if(event.key === 'Enter')
-            ctrlAddItem();
-
-    });
+    
+    return{
+        init: function () {
+            console.log('App has started');
+            setupEventListeners();
+        }
+    }
 
     // ? passing the other 2 modules as arguments
 })(budgetController, UIController);
+
+// * where all the code can be executed right at the beginning when the application starts
+controller.init();
