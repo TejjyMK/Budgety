@@ -135,7 +135,10 @@ var UIController = (function () {
             // ? clears the fields
             fieldsArr.forEach(function (current, index, array) {
                 current.value="";
-            })
+            });
+
+            // ? so that it focuses on the description bit
+            fieldsArr[0].focus();
         },
 
         getDOMput: function () {
