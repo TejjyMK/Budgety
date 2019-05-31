@@ -149,6 +149,38 @@ var UIController = (function () {
         expensesPercentLabel: '.item__percentage'
     };
 
+    var formatNumber = function (num, type) {
+        var numSplit, int, decimal, numberOfCommas;
+
+        num = Math.abs(num);
+
+        // * exactly 2 decimal points
+        num = num.toFixed(2);
+
+        // * comma separating the thousands
+        numSplit = num.split('.');
+        int = numSplit[0];
+        if (int.length > 3) {
+            // ? First find the number of commas to be added.
+            numberOfCommas = Math.floor((int.length - 1) / 3);
+
+            /*
+             ? Then iterate over the string to add commas at the
+             ? right position while keeping in mind that every iteration will make the string longer.
+            */
+            for (var i = 0; i < numberOfCommas; i++) {
+                var position = 3 + 3 * i + i;
+                int = int.slice(0, -position) + ',' + int.slice(-position);
+            }
+        }
+
+        decimal = numSplit[1];
+
+        // * + or - before number
+        return (type === 'exp' ? '-' : '+') + ' ' + int + '.' + decimal;
+
+    };
+
 
     return {
         getInput: function () {
@@ -170,7 +202,7 @@ var UIController = (function () {
                 html = '  <div class="item clearfix" id="inc-%id%">\n' +
                     '       <div class="item__description">%description%</div>\n' +
                     '       <div class="right clearfix">\n' +
-                    '            <div class="item__value">+ %value%</div>\n' +
+                    '            <div class="item__value">%value%</div>\n' +
                     '            <div class="item__delete">\n' +
                     '                <button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button>\n' +
                     '            </div>\n' +
@@ -181,7 +213,7 @@ var UIController = (function () {
                 html = '<div class="item clearfix" id="exp-%id%">\n' +
                     '       <div class="item__description">%description%</div>\n' +
                     '       <div class="right clearfix">\n' +
-                    '            <div class="item__value">- %value%</div>\n' +
+                    '            <div class="item__value">%value%</div>\n' +
                     '            <div class="item__percentage">21%</div>\n' +
                     '            <div class="item__delete">\n' +
                     '                 <button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button>\n' +
@@ -194,7 +226,7 @@ var UIController = (function () {
 
             newHtml = html.replace('%id%', obj.id);
             newHtml = newHtml.replace('%description%', obj.description);
-            newHtml = newHtml.replace('%value%', obj.value);
+            newHtml = newHtml.replace('%value%', formatNumber(obj.value, type));
 
             // ? Insert the HTML into the DOM
 
@@ -225,9 +257,11 @@ var UIController = (function () {
             fieldsArr[0].focus();
         },
         displayBudget: function (object) {
-            document.querySelector(DOMinputs.budgetLabel).textContent = object.budget;
-            document.querySelector(DOMinputs.incomeLabel).textContent = object.totalInc;
-            document.querySelector(DOMinputs.expensesLabel).textContent = object.totalExp;
+            var type;
+            object.budget > 0 ? type = 'inc' : type = 'exp';
+            document.querySelector(DOMinputs.budgetLabel).textContent = formatNumber(object.budget, type);
+            document.querySelector(DOMinputs.incomeLabel).textContent = formatNumber(object.totalInc, 'inc');
+            document.querySelector(DOMinputs.expensesLabel).textContent = formatNumber(object.totalExp, 'exp');
 
             if (object.percentage > 0)
                 document.querySelector(DOMinputs.percentageLabel).textContent = object.percentage + '%';
