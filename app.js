@@ -40,8 +40,8 @@ var budgetController = (function () {
             inc: 0
 
         },
-        budget : 0,
-        percentage : -1
+        budget: 0,
+        percentage: -1
     };
 
     return {
@@ -75,20 +75,20 @@ var budgetController = (function () {
             data.budget = data.total.inc - data.total.exp;
 
             // ? Calculate the percentage of income that has been spent
-            if(data.total.inc > 0)
-                data.percentage = (data.total.exp/ data.total.inc) * 100 ;
+            if (data.total.inc > 0)
+                data.percentage = (data.total.exp / data.total.inc) * 100;
             else
                 data.percentage = -1;
         }
         ,
         getBudget: function () {
-            return{
-                budget : data.budget,
+            return {
+                budget: data.budget,
                 totalInc: data.total.inc,
                 totalExp: data.total.exp,
-                percentage : data.percentage
+                percentage: data.percentage
             }
-            
+
         }
         ,
         testing: function () {
@@ -111,7 +111,8 @@ var UIController = (function () {
         budgetLabel: '.budget__value',
         incomeLabel: '.budget__income--value',
         expensesLabel: '.budget__expenses--value',
-        percentageLabel: '.budget__expenses--percentage'
+        percentageLabel: '.budget__expenses--percentage',
+        container: '.container'
     };
 
 
@@ -185,14 +186,13 @@ var UIController = (function () {
         },
         displayBudget: function (object) {
             document.querySelector(DOMinputs.budgetLabel).textContent = object.budget;
-            document.querySelector(DOMinputs.incomeLabel).textContent = object.totalInc  ;
+            document.querySelector(DOMinputs.incomeLabel).textContent = object.totalInc;
             document.querySelector(DOMinputs.expensesLabel).textContent = object.totalExp;
 
-            if(object.percentage > 0)
+            if (object.percentage > 0)
                 document.querySelector(DOMinputs.percentageLabel).textContent = object.percentage + '%';
             else
                 document.querySelector(DOMinputs.percentageLabel).textContent = '--';
-
 
 
         }
@@ -219,15 +219,16 @@ var controller = (function (budgetCtrl, UICtrl) {
 
         });
 
+        document.querySelector(DOM.container).addEventListener('click', ctrlDeleteItem);
     };
 
     var updateBudget = function () {
         // * 4) Calculate the budget
         budgetCtrl.calculateBudget();
 
-        
+
         // * 5) Return the budget
-        var budget= budgetCtrl.getBudget();
+        var budget = budgetCtrl.getBudget();
 
         // * 6) Display the budget on the UI
         UICtrl.displayBudget(budget);
@@ -241,7 +242,7 @@ var controller = (function (budgetCtrl, UICtrl) {
         console.log(input);
 
         // ? Validity checks
-        if(input.description !== "" && !isNaN(input.value) && input.value >0){
+        if (input.description !== "" && !isNaN(input.value) && input.value > 0) {
             // * 2) Add the item to the budget controller
 
             newItem = budgetCtrl.addItem(input.type, input.description, input.value);
@@ -259,14 +260,33 @@ var controller = (function (budgetCtrl, UICtrl) {
 
     };
 
+    var ctrlDeleteItem = function (event) {
+        var itemID,splitID, type, ID;
+        itemID = event.target.parentNode.parentNode.parentNode.parentNode.id;
+
+        if(itemID){
+          splitID = itemID.split('-');
+          type= splitID[0];
+          ID= splitID[1];
+
+            // * 1 Delete the item from the data structure
+
+            // * 2 Delete the item from the UI
+
+            // * 3 Update and show the new budget
+
+        }
+    };
+
     return {
         init: function () {
             console.log('App has started');
-            UICtrl.displayBudget( {
-                budget : 0,
+            UICtrl.displayBudget({
+                budget: 0,
                 totalInc: 0,
                 totalExp: 0,
-                percentage : -1});
+                percentage: -1
+            });
             setupEventListeners();
         }
     }
