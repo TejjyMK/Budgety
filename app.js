@@ -182,6 +182,12 @@ var UIController = (function () {
 
     };
 
+    var nodeListForEach = function (list, callback) {
+        for (var i = 0; i < list.length; i++) {
+            callback(list[i], i);
+        }
+    };
+
 
     return {
         getInput: function () {
@@ -276,11 +282,6 @@ var UIController = (function () {
             // ? returns a node list
             var fields = document.querySelectorAll(DOMinputs.expensesPercentLabel);
 
-            var nodeListForEach = function (list, callback) {
-                for (var i = 0; i < list.length; i++) {
-                    callback(list[i], i);
-                }
-            };
 
             nodeListForEach(fields, function (current, index) {
                 if (percentages[index] > 0)
@@ -302,13 +303,29 @@ var UIController = (function () {
             document.querySelector(DOMinputs.dateLabel).textContent = monthNames[month] + ' ' + year;
         }
         ,
+        changedType: function () {
+            // ? returns nodelist, so cant use forEach
+
+            var fields = document.querySelectorAll(
+                DOMinputs.inputType + ' ,'+
+                         DOMinputs.inputDescription + ' ,' +
+                         DOMinputs.inputValue
+            );
+
+            nodeListForEach(fields,function (current) {
+                current.classList.toggle('red-focus');
+            });
+
+            document.querySelector(DOMinputs.inputButton).classList.toggle('red');
+        }
+        ,
 
         getDOMput: function () {
             return DOMinputs;
         }
 
 
-    }
+    };
 })();
 
 // * Global App Controller
@@ -325,6 +342,8 @@ var controller = (function (budgetCtrl, UICtrl) {
         });
 
         document.querySelector(DOM.container).addEventListener('click', ctrlDeleteItem);
+        document.querySelector(DOM.inputType).addEventListener('change',UICtrl.changedType) ;
+
     };
 
     var updateBudget = function () {
